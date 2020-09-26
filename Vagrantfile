@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # Base Imgage
+  config.vm.box = "ubuntu/bionic64"
+  # Limit the disk size so that the host will not run out of disk size
+  # Requires: $ vagrant plugin install vagrant-disksize
+  config.disksize.size = '50GB'
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+    vb.name = "Ubuntu_Docker_Box"
+    vb.check_guest_additions = false
+
+    # Customize the amount of memory on the VM:
+    vb.memory = "2048"
+    # Customize the amount of cpus
+    vb.cpus = 2
+  end
+
+  # Port forwarding
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "keycloak"
+  config.vm.network "forwarded_port", guest: 8180, host: 8180, id: "wildfly applications"
+  config.vm.network "forwarded_port", guest: 9990, host: 9990, id: "wildfly admin console"
+
+  # Network settings
+  # config.vm.network "public_network"
+
+  # Shared folders
+  config.vm.synced_folder "../../docker", "/docker"
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # Installation of additional software using the linux shell
+  config.vm.provision "shell", inline: <<-SHELL
+    apt update
+    apt install -y docker.io docker-compose
+
+    usermod -aG docker vagrant
+  SHELL
+end
