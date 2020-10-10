@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # Base Imgage
+  config.vm.box = "ubuntu/focal64"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+    vb.name = "Ubuntu_Jenkins_Box"
+    vb.check_guest_additions = false
+
+    # Customize the amount of memory on the VM:
+    vb.memory = "1024"
+    # Customize the amount of cpus
+    vb.cpus = 1
+  end
+
+  # Port forwarding
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "jenkins"
+
+  # Network settings
+  # config.vm.network "public_network"
+
+  # Shared folders
+  # config.vm.synced_folder "", ""
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # Installation of additional software using the linux shell
+  config.vm.provision "shell", inline: <<-SHELL
+    wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+    sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+    sudo apt-get update
+    sudo apt-get install openjdk-11-jre -y
+    sudo apt-get install jenkins -y
+  SHELL
+end
