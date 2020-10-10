@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
 
   # Base Imgage
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/focal64"
   # Limit the disk size so that the host will not run out of disk size
   # Requires: $ vagrant plugin install vagrant-disksize
   config.disksize.size = '50GB'
@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
     # Customize the amount of memory on the VM:
     vb.memory = "2048"
     # Customize the amount of cpus
-    vb.cpus = 2
+    vb.cpus = 1
   end
 
   # Port forwarding
@@ -33,15 +33,15 @@ Vagrant.configure("2") do |config|
   # config.vm.network "public_network"
 
   # Shared folders
-  config.vm.synced_folder "../../docker", "/docker"
+  config.vm.synced_folder "../../../docker", "/docker"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
   # Installation of additional software using the linux shell
   config.vm.provision "shell", inline: <<-SHELL
-    apt update
-    apt install -y docker.io docker-compose
+    apt-get update
+    apt-get install -y docker.io docker-compose
 
     usermod -aG docker vagrant
   SHELL
